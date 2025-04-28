@@ -101,7 +101,7 @@ if st.button("Run Task"):
                 prompt = f"Perform the task '{task}' on this text:\n\n{input_text}"
 
             try:
-                client = openai.OpenAI()
+                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
                 response = client.chat.completions.create(
                     model=model,
                     messages=[
