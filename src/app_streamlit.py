@@ -4,7 +4,7 @@ import streamlit as st
 import requests
 import time
 import openai
-
+import os
 
 
 # FastAPI backend URL
