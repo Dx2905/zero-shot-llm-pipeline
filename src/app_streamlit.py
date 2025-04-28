@@ -6,7 +6,6 @@ import time
 import openai
 
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # FastAPI backend URL
 API_URL = "http://127.0.0.1:8000/run_task/"
