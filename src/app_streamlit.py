@@ -47,35 +47,83 @@ input_text = st.text_area("Enter Text Here:", value=default_text, height=200)
 result_placeholder = st.empty()
 
 # Submit button
+# if st.button("Run Task"):
+#     if input_text.strip() == "":
+#         st.warning("⚠️ Please enter some text first.")
+#     else:
+#         with st.spinner("Running AI model... Please wait."):
+#             start_time = time.time()
+#             payload = {
+#             "task": task,
+#             "input_text": input_text,
+#             "model": model
+#             }
+
+#             try:
+#                 response = requests.post(API_URL, json=payload)
+#                 end_time = time.time()
+
+#                 if response.status_code == 200:
+#                     result = response.json()['result']
+#                     st.success(f"✅ Task '{task}' completed using {model} in {end_time - start_time:.2f} seconds!")
+#                     st.markdown(f"**Selected Model:** {model}")
+#                     st.markdown(f"**Selected Task:** {task}")
+#                     approx_tokens = (len(input_text) + len(result)) // 4
+#                     st.info(f"ℹ️ Approximate token usage: {approx_tokens} tokens")
+#                     result_placeholder.subheader("Result:")
+#                     result_placeholder.write(result)
+#                 else:
+#                     st.error(f"❌ API Error: {response.status_code}")
+#             except Exception as e:
+#                 st.error(f"❌ Connection Error: {e}")
+
+
 if st.button("Run Task"):
     if input_text.strip() == "":
         st.warning("⚠️ Please enter some text first.")
     else:
         with st.spinner("Running AI model... Please wait."):
             start_time = time.time()
-            payload = {
-            "task": task,
-            "input_text": input_text,
-            "model": model
-            }
+
+            # Build dynamic prompt
+            if task == "Summarization":
+                prompt = f"Summarize the following text:\n\n{input_text}"
+            elif task == "Translation":
+                prompt = f"Translate this English text into French:\n\n{input_text}"
+            elif task == "Question Generation":
+                prompt = f"Generate two questions based on this text:\n\n{input_text}"
+            elif task == "Sentiment Analysis":
+                prompt = f"Analyze the sentiment (Positive, Negative, Neutral) of this text:\n\n{input_text}"
+            else:
+                prompt = f"Perform the task '{task}' on this text:\n\n{input_text}"
 
             try:
-                response = requests.post(API_URL, json=payload)
+                client = openai.OpenAI()
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=500,
+                )
+                result = response.choices[0].message.content
+
                 end_time = time.time()
 
-                if response.status_code == 200:
-                    result = response.json()['result']
-                    st.success(f"✅ Task '{task}' completed using {model} in {end_time - start_time:.2f} seconds!")
-                    st.markdown(f"**Selected Model:** {model}")
-                    st.markdown(f"**Selected Task:** {task}")
-                    approx_tokens = (len(input_text) + len(result)) // 4
-                    st.info(f"ℹ️ Approximate token usage: {approx_tokens} tokens")
-                    result_placeholder.subheader("Result:")
-                    result_placeholder.write(result)
-                else:
-                    st.error(f"❌ API Error: {response.status_code}")
+                st.success(f"✅ Task '{task}' completed using {model} in {end_time - start_time:.2f} seconds!")
+                st.markdown(f"**Selected Model:** {model}")
+                st.markdown(f"**Selected Task:** {task}")
+
+                approx_tokens = (len(input_text) + len(result)) // 4
+                st.info(f"ℹ️ Approximate token usage: {approx_tokens} tokens")
+
+                result_placeholder.subheader("Result:")
+                result_placeholder.write(result)
+
             except Exception as e:
                 st.error(f"❌ Connection Error: {e}")
+
 
 # Clear input/output if button clicked
 if clear_button:
