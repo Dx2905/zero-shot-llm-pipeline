@@ -1,0 +1,8 @@
+transformers
+openai
+fastapi
+uvicorn
+pydantic
+python-dotenv
+streamlit
+torch
