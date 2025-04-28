@@ -5,7 +5,7 @@ import requests
 import time
 import openai
 
-load_dotenv()
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # FastAPI backend URL
